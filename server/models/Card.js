@@ -1,23 +1,12 @@
 const {Schema, model} = require('mongoose')
 
 
-const Square = new Schema({
-    content:{
-        type: String,
-        required: true,
-    },
-    position: {
-        type: String,
-        required: true
-    }
-})
-
 
 
 
 
 const cardSchema = new Schema({
-    squares: [Square],
+    squares: [{type: Schema.Types.ObjectId, ref: 'Square'}],
     completed:{
         type: Boolean,
         default: false
@@ -27,3 +16,9 @@ const cardSchema = new Schema({
         ref: 'User'
     }
 })
+
+
+const Card = model('Card', cardSchema)
+
+
+module.exports = Card

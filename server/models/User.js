@@ -19,12 +19,11 @@ const userSchema = new Schema({
     required: true,
     minlength: 5,
   },
-  skills: [
-    {
-      type: String,
-      trim: true,
-    },
-  ],
+  friends: [{type: Schema.Types.ObjectId, ref: 'User'}],
+  games: [{type: Schema.Types.ObjectId, ref: 'Game'}],
+  cards: [{type: Schema.Types.ObjectId, ref: 'Card'}],
+  friendInvites: [{type: Schema.Types.ObjectId, ref: 'User'}],
+  gameInvites: [{type: Schema.Types.ObjectId, ref: 'Game'}]
 });
 
 // set up pre-save middleware to create password

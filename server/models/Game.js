@@ -8,9 +8,12 @@ const gameSchema = new Schema({
         unique: true,
         required: true,
     },
-    cards: {
-        type: Schema.Types.ObjectId, 
-        ref: 'Card'
-    },
-    
+    cards: [{type: Schema.Types.ObjectId, ref: 'Card'}],
+    users: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    squares: [{type: Schema.Types.ObjectId, ref: 'Square'}]
 })
+
+
+const Game = model('Game', gameSchema)
+
+module.exports = Game
