@@ -7,6 +7,11 @@ const resolvers = {
         me: async (parent, args, context) =>{
             if (context.user){
                 const user = await User.findById(context.user._id)
+                                       .populate('friends')
+                                       .populate('games')
+                                       .populate('cards')
+                                       .populate('gameInvites')
+                                       .populate('friendInvites')
                 return user
             }
             
@@ -136,6 +141,37 @@ const resolvers = {
             }
             throw AuthenticationError
         },
+        rejectFriendInvite: async (parent, {username}, context) =>{
+            if (context.user){
+                const rejectedFriend = await User.findOne({username})
+
+                if (!rejectedFriend){
+                    throw new GraphQLError(`User: ${username}, is either incorrect or no longer exists.`)
+                }
+                const currentUser = await User.findByIdAndUpdate(context.user._id, {
+                    $pull: {friendInvites: rejectedFriend._id}
+                })
+
+                return rejectedFriend
+            }
+            throw AuthenticationError
+        },
+        removeFriend: async (parent, {username}, context) =>{
+            if (context.user){
+                const removedFriend = await User.findOne({username})
+
+                if (!removedFriend){
+                    throw new GraphQLError(`User: ${username}, is either incorrect or no longer exists.`)
+                }
+
+                const currentUser = await User.findByIdAndUpdate(context.user._id, {
+                    $pull: {friends: removedFriend._id}
+                })
+
+                return removedFriend
+            }
+            throw AuthenticationError
+        },
         gameInvite: async (parents, {gameId, username}, context) =>{
             if (context.user){
                 const game = await Game.findById(gameId)
@@ -154,6 +190,46 @@ const resolvers = {
                 }
             }
 
+            throw AuthenticationError
+        },
+        acceptGameInvite: async (parent, {gameId}, context) =>{
+            if (context.user){
+                const currentUser = await User.findByIdAndUpdate(context.user._id, {
+                    $pull: {gameInvites: gameId},
+                    $addToSet: {games: gameId}
+                })
+
+                const game = await Game.findByIdAndUpdate(gameId, {
+                    $addToSet: {users: context.user._id}
+                })
+                
+                return game
+            }   
+            throw AuthenticationError
+        },
+        rejectGameInvite: async (parent, {gameId}, context) =>{
+            if (context.user){
+                const currentUser = await User.findByIdAndUpdate(context.user._id,{
+                    $pull: {gameInvites: gameId}
+                })
+
+                const game = await Game.findById(gameId)
+
+                return game
+            }
+            throw AuthenticationError
+        },
+        leaveGame: async(parent, {gameId}, context) =>{
+            if (context.user){
+                const currentUser = await User.findByIdAndUpdate(context.user._id, {
+                    $pull: {games: gameId}
+                })
+                const game = await Game.findByIdAndUpdate(gameId, {
+                    $pull: {users: currentUser._id}
+                })
+            
+                return game
+            }
             throw AuthenticationError
         }
     }

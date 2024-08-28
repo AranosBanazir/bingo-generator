@@ -57,6 +57,7 @@ const typeDefs =`
         gameInvite(gameId: ID!, username: String!): Game
         acceptGameInvite(gameId: ID!): Game
         rejectGameInvite(gameId: ID!): Game
+        leaveGame(gameId: ID!): Game
 
         createCard(gameId: ID!): Card
 
