@@ -1,7 +1,7 @@
-import Card from "./Card";
-import Square from "./Square";
-import Game from "./Game";
-import User from "./User";
+const Card = require('./Card')
+const Square = require('./Square')
+const Game = require('./Game')
+const User = require('./User')
 
 
 module.exports = {
