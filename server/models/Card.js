@@ -1,12 +1,25 @@
 const {Schema, model} = require('mongoose')
 
-
+const positionalSquareSchema = new Schema({
+    content:{
+        type: String,
+        required: true,
+    },
+    position:{
+        type: String,
+        required: true,
+    },
+    completed:{
+        type: Boolean,
+        default: false
+    }
+})
 
 
 
 
 const cardSchema = new Schema({
-    squares: [{type: Schema.Types.ObjectId, ref: 'Square'}],
+    squares: [positionalSquareSchema],
     completed:{
         type: Boolean,
         default: false
@@ -14,7 +27,8 @@ const cardSchema = new Schema({
     owner: {
         type: Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    game: {type: Schema.Types.ObjectId, ref: 'Game'}
 })
 
 

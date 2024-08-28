@@ -1,71 +1,52 @@
 [
-    {
-        "content": "Square 1"
-    },
-    {
-        "content": "Square 2"
-    },
-    {
-        "content": "Square 4"
-    },
-    {
-        "content": "Square 5"
-    },
-    {
-        "content": "Square 6"
-    },
-    {
-        "content": "Square 7"
-    },
-    {
-        "content": "Square 8"
-    },
-    {
-        "content": "Square 9"
-    },
-    {
-        "content": "Square 10"
-    },
-    {
-        "content": "Square 11"
-    },
-    {
-        "content": "Square 12"
-    },
-    {
-        "content": "Square 13"
-    },
-    {
-        "content": "Square 14"
-    },
-    {
-        "content": "Square 15"
-    },
-    {
-        "content": "Square 16"
-    },
-    {
-        "content": "Square 17"
-    },
-    {
-        "content": "Square 18"
-    },
-    {
-        "content": "Square 19"
-    },
-    {
-        "content": "Square 20"
-    },
-    {
-        "content": "Square 21"
-    },
-    {
-        "content": "Square 22"
-    },
-    {
-        "content": "Square 23"
-    },
-    {
-        "content": "Square 24"
-    }
+    { "content": "Square 1" },
+    { "content": "Square 2" },
+    { "content": "Square 3" },
+    { "content": "Square 4" },
+    { "content": "Square 5" },
+    { "content": "Square 6" },
+    { "content": "Square 7" },
+    { "content": "Square 8" },
+    { "content": "Square 9" },
+    { "content": "Square 10" },
+    { "content": "Square 11" },
+    { "content": "Square 12" },
+    { "content": "Square 13" },
+    { "content": "Square 14" },
+    { "content": "Square 15" },
+    { "content": "Square 16" },
+    { "content": "Square 17" },
+    { "content": "Square 18" },
+    { "content": "Square 19" },
+    { "content": "Square 20" },
+    { "content": "Square 21" },
+    { "content": "Square 22" },
+    { "content": "Square 23" },
+    { "content": "Square 24" },
+    { "content": "Square 25" },
+    { "content": "Square 26" },
+    { "content": "Square 27" },
+    { "content": "Square 28" },
+    { "content": "Square 29" },
+    { "content": "Square 30" },
+    { "content": "Square 31" },
+    { "content": "Square 32" },
+    { "content": "Square 33" },
+    { "content": "Square 34" },
+    { "content": "Square 35" },
+    { "content": "Square 36" },
+    { "content": "Square 37" },
+    { "content": "Square 38" },
+    { "content": "Square 39" },
+    { "content": "Square 40" },
+    { "content": "Square 41" },
+    { "content": "Square 42" },
+    { "content": "Square 43" },
+    { "content": "Square 44" },
+    { "content": "Square 45" },
+    { "content": "Square 46" },
+    { "content": "Square 47" },
+    { "content": "Square 48" },
+    { "content": "Square 49" },
+    { "content": "Square 50" }
 ]
