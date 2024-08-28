@@ -100,6 +100,44 @@ const resolvers = {
                 return newCard
             }
             throw new GraphQLError('You must be logged in to create a card.')
+        },
+        addFriend: async (parent, {username}, context) =>{
+            if (context.user){
+                const currentUser = await User.findById(context.user._id)
+                const potentialFriend = await User.findOne({username})
+
+                //erroring on no username found
+                if (!potentialFriend){
+                    throw new GraphQLError(`No user found with username: ${username}`)
+                }
+
+                //check if the potentialFriend's id is already in the users friend invites before sending
+                console.log(currentUser)
+                if (currentUser.friendInvites.includes(potentialFriend._id)){
+                    console.log('they sent us a friend request first')
+                    const updateCurrentUser = await User.findByIdAndUpdate(context.user._id, {
+                        $addToSet: {friends: potentialFriend._id},
+                        $pull: {friendInvites: potentialFriend._id}
+                    })
+
+                    const updatedPotentialFriendStatus = await User.findByIdAndUpdate(potentialFriend._id, {
+                        $addToSet: {friends: currentUser._id},
+                        $pull: {friendInvites: currentUser._id}
+                    })
+
+                    return updatedPotentialFriendStatus
+                    //TODO if they sent the invite first, add to both friends lists and remove invites: Return early
+                }
+                
+
+
+                const updatedPotentialFriend = await User.findOneAndUpdate({username}, {
+                    $addToSet: {friendInvites: currentUser._id},
+                })
+                
+                return updatedPotentialFriend
+            }
+            throw AuthenticationError
         }
     }
 }
