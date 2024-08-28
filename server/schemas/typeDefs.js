@@ -2,7 +2,7 @@ const typeDefs =`
     
     type User{
         _id: ID!
-        name: String!
+        username: String!
         email: String!
         password: String!
         friends: [User]
@@ -33,10 +33,10 @@ const typeDefs =`
         position: String!
     }
     
-    type Auth{
-        _id
-        token
-    }
+    type Auth {
+    token: ID!
+    user: User
+  }
 
     type Query{
         me: User

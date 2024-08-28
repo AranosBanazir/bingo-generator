@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const userSchema = new Schema({
-  name: {
+  username: {
     type: String,
     required: true,
     unique: true,
@@ -35,6 +35,15 @@ userSchema.pre('save', async function (next) {
 
   next();
 });
+
+userSchema.pre('updateOne', async function(next){
+  for (const person of this.friendInvites){
+    const possibleFriend = await User.findById({_id: person}).populate('friendInvites')
+    console.log('THIS IS A TEST FOR PRE UPDATE')
+    console.log(possibleFriend)
+  }
+  next()
+})
 
 // compare the incoming password with the hashed password
 userSchema.methods.isCorrectPassword = async function (password) {
