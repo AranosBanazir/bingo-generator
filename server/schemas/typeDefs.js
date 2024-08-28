@@ -42,14 +42,17 @@ const typeDefs =`
         me: User
         getGameSquares(gameId: ID!): [Square]
         getUserSquares(userId: ID!): [Square]
+        getGames: [Game]
     }
 
-    type Mutations{
-        login(email: String!, password: String!): Auth
+    type Mutation {
+        login(username: String!, password: String!): Auth
         addUser(username: String!, email: String!, password: String!): Auth
         delUser(password: String!): User
 
-        addSquare(content: String!): Square
+        createCard(gameId: ID!): Card
+
+        addSquare(content: String!, gameId: ID!): Square
         deleteSquare(_id: ID!): Square
     }
 `
