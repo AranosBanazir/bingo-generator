@@ -27,7 +27,8 @@ const cardSchema = new Schema({
     owner: {
         type: Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    game: {type: Schema.Types.ObjectId, ref: 'Game'}
 })
 
 

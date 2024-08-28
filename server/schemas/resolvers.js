@@ -1,5 +1,6 @@
 const {Game, Square, Card, User} = require('../models')
 const {signToken, AuthenticationError} = require('../utils/auth')
+const { GraphQLError } = require('graphql');
 
 const resolvers = {
     Query: {
@@ -20,13 +21,13 @@ const resolvers = {
         login: async (parent, {username, password}) =>{
             const user = await User.findOne({username})
             if (!user){
-                throw AuthenticationError
+                throw new GraphQLError('Incorrect username.')
             }
             
             const correctPW = await user.isCorrectPassword(password)
 
             if (!correctPW){
-                throw AuthenticationError
+                throw new GraphQLError('Incorrect password.')
             }
 
             const token = signToken(user)
@@ -35,11 +36,18 @@ const resolvers = {
         },
         createCard: async (parent, {gameId}, context) =>{
             if (context.user){
-                const user = await User.findById(context.user._id)
+                const user = await User.findById(context.user._id).populate('cards')
                 const game = await Game.findById(gameId).populate('squares')
 
+                
+                for (const card of user.cards){
+                    if (card.game == gameId){
+                        return new GraphQLError('You have already created a card for this game.')
+                    }
+                }
+
                 if (!game){
-                    return null
+                    return new GraphQLError(`No Game Found With ID: ${gameId || 0}`)
                 }
 
                 let positions = [
@@ -76,13 +84,22 @@ const resolvers = {
 
                 const newCard = await Card.create({
                     squares: newCardSquares,
-                    owner: context.user._id
+                    owner: context.user._id,
+                    game: gameId
                 })
 
-                console.log("new Squares: " , newCardSquares)
+                //Adding the card to the user and the game
+                const updateUser = await User.findByIdAndUpdate(context.user._id, {
+                    $addToSet: {cards: newCard}
+                })
+                const updateGame = await Game.findByIdAndUpdate(gameId, {
+                    $addToSet: {cards: newCard}
+                })
+
+
                 return newCard
             }
-            throw AuthenticationError
+            throw new GraphQLError('You must be logged in to create a card.')
         }
     }
 }
