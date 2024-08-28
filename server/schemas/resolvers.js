@@ -1,12 +1,17 @@
 const {Game, Square, Card, User} = require('../models')
 const {signToken, AuthenticationError} = require('../utils/auth')
-const { GraphQLError } = require('graphql');
+const { GraphQLError, graphql } = require('graphql');
 
 const resolvers = {
     Query: {
         me: async (parent, args, context) =>{
             if (context.user){
                 const user = await User.findById(context.user._id)
+                                       .populate('friends')
+                                       .populate('games')
+                                       .populate('cards')
+                                       .populate('gameInvites')
+                                       .populate('friendInvites')
                 return user
             }
             
@@ -100,6 +105,132 @@ const resolvers = {
                 return newCard
             }
             throw new GraphQLError('You must be logged in to create a card.')
+        },
+        addFriend: async (parent, {username}, context) =>{
+            if (context.user){
+                const currentUser = await User.findById(context.user._id)
+                const potentialFriend = await User.findOne({username})
+
+                //erroring on no username found
+                if (!potentialFriend){
+                    throw new GraphQLError(`No user found with username: ${username}`)
+                }
+
+                //check if the potentialFriend's id is already in the users friend invites before sending
+                if (currentUser.friendInvites.includes(potentialFriend._id)){
+                    const updateCurrentUser = await User.findByIdAndUpdate(context.user._id, {
+                        $addToSet: {friends: potentialFriend._id},
+                        $pull: {friendInvites: potentialFriend._id}
+                    })
+
+                    const updatedPotentialFriendStatus = await User.findByIdAndUpdate(potentialFriend._id, {
+                        $addToSet: {friends: currentUser._id},
+                        $pull: {friendInvites: currentUser._id}
+                    })
+
+                    return updatedPotentialFriendStatus
+                }
+                
+
+                //send the friend invite
+                const updatedPotentialFriend = await User.findOneAndUpdate({username}, {
+                    $addToSet: {friendInvites: currentUser._id},
+                })
+                
+                return updatedPotentialFriend
+            }
+            throw AuthenticationError
+        },
+        rejectFriendInvite: async (parent, {username}, context) =>{
+            if (context.user){
+                const rejectedFriend = await User.findOne({username})
+
+                if (!rejectedFriend){
+                    throw new GraphQLError(`User: ${username}, is either incorrect or no longer exists.`)
+                }
+                const currentUser = await User.findByIdAndUpdate(context.user._id, {
+                    $pull: {friendInvites: rejectedFriend._id}
+                })
+
+                return rejectedFriend
+            }
+            throw AuthenticationError
+        },
+        removeFriend: async (parent, {username}, context) =>{
+            if (context.user){
+                const removedFriend = await User.findOne({username})
+
+                if (!removedFriend){
+                    throw new GraphQLError(`User: ${username}, is either incorrect or no longer exists.`)
+                }
+
+                const currentUser = await User.findByIdAndUpdate(context.user._id, {
+                    $pull: {friends: removedFriend._id}
+                })
+
+                return removedFriend
+            }
+            throw AuthenticationError
+        },
+        gameInvite: async (parents, {gameId, username}, context) =>{
+            if (context.user){
+                const game = await Game.findById(gameId)
+
+                console.log('owner: ', game.owner, 'current User: ', context.user._id)
+                //Validating the game owner is inviting
+                if (game.owner == context.user._id){
+                    //send the invite
+                    const invitedUser = await User.findOneAndUpdate({username},{
+                        $addToSet: {gameInvites: gameId}
+                    })
+
+                    return game
+                }else{
+                    throw new GraphQLError(`Sorry! You are not the owner of: ${game.title}`)
+                }
+            }
+
+            throw AuthenticationError
+        },
+        acceptGameInvite: async (parent, {gameId}, context) =>{
+            if (context.user){
+                const currentUser = await User.findByIdAndUpdate(context.user._id, {
+                    $pull: {gameInvites: gameId},
+                    $addToSet: {games: gameId}
+                })
+
+                const game = await Game.findByIdAndUpdate(gameId, {
+                    $addToSet: {users: context.user._id}
+                })
+                
+                return game
+            }   
+            throw AuthenticationError
+        },
+        rejectGameInvite: async (parent, {gameId}, context) =>{
+            if (context.user){
+                const currentUser = await User.findByIdAndUpdate(context.user._id,{
+                    $pull: {gameInvites: gameId}
+                })
+
+                const game = await Game.findById(gameId)
+
+                return game
+            }
+            throw AuthenticationError
+        },
+        leaveGame: async(parent, {gameId}, context) =>{
+            if (context.user){
+                const currentUser = await User.findByIdAndUpdate(context.user._id, {
+                    $pull: {games: gameId}
+                })
+                const game = await Game.findByIdAndUpdate(gameId, {
+                    $pull: {users: currentUser._id}
+                })
+            
+                return game
+            }
+            throw AuthenticationError
         }
     }
 }

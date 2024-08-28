@@ -2,6 +2,4 @@
 
 
 ## ToDo
-Write seeds for database
-
-Test making random cards
+Create and test Game and Friend invite features.
