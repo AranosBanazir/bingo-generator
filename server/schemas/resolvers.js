@@ -1,6 +1,6 @@
 const {Game, Square, Card, User} = require('../models')
 const {signToken, AuthenticationError} = require('../utils/auth')
-const { GraphQLError } = require('graphql');
+const { GraphQLError, graphql } = require('graphql');
 
 const resolvers = {
     Query: {
@@ -112,9 +112,7 @@ const resolvers = {
                 }
 
                 //check if the potentialFriend's id is already in the users friend invites before sending
-                console.log(currentUser)
                 if (currentUser.friendInvites.includes(potentialFriend._id)){
-                    console.log('they sent us a friend request first')
                     const updateCurrentUser = await User.findByIdAndUpdate(context.user._id, {
                         $addToSet: {friends: potentialFriend._id},
                         $pull: {friendInvites: potentialFriend._id}
@@ -126,17 +124,36 @@ const resolvers = {
                     })
 
                     return updatedPotentialFriendStatus
-                    //TODO if they sent the invite first, add to both friends lists and remove invites: Return early
                 }
                 
 
-
+                //send the friend invite
                 const updatedPotentialFriend = await User.findOneAndUpdate({username}, {
                     $addToSet: {friendInvites: currentUser._id},
                 })
                 
                 return updatedPotentialFriend
             }
+            throw AuthenticationError
+        },
+        gameInvite: async (parents, {gameId, username}, context) =>{
+            if (context.user){
+                const game = await Game.findById(gameId)
+
+                console.log('owner: ', game.owner, 'current User: ', context.user._id)
+                //Validating the game owner is inviting
+                if (game.owner == context.user._id){
+                    //send the invite
+                    const invitedUser = await User.findOneAndUpdate({username},{
+                        $addToSet: {gameInvites: gameId}
+                    })
+
+                    return game
+                }else{
+                    throw new GraphQLError(`Sorry! You are not the owner of: ${game.title}`)
+                }
+            }
+
             throw AuthenticationError
         }
     }

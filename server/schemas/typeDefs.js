@@ -51,8 +51,12 @@ const typeDefs =`
         delUser(password: String!): User
 
         addFriend(username: String!): User
+        removeFriend(username: String!): User
+        rejectFriendInvite(username: String!): User
 
-        gameInvite(gameId: ID!, userId: ID!): Game
+        gameInvite(gameId: ID!, username: String!): Game
+        acceptGameInvite(gameId: ID!): Game
+        rejectGameInvite(gameId: ID!): Game
 
         createCard(gameId: ID!): Card
 
