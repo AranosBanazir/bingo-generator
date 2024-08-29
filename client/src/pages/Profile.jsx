@@ -1,24 +1,20 @@
-import { useContext } from "react";
+import { useQuery } from "@apollo/client";
 import UserContext from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import { ME } from "../../utils/queries";
 
 const ProfilePage = () => {
-  const { userData } = useContext(UserContext);
-  const navigate = useNavigate()
-  let loading;
-  if (!userData?._id) {
-    loading = true;
-  } else {
-    loading = false;
-  }
+    const {loading, error, data} = useQuery(ME)
+    const userData = data?.me
+    const navigate = useNavigate()
 
 
-  const handleBingoClick = (e) =>{
-    const {id} = e.target.dataset
-    if (!id) return
-    navigate(`/card/${id}`)
-    
-  }
+    const handleBingoClick = (e) =>{
+        const {id} = e.target.dataset
+        if (!id) return
+        navigate(`/card/${id}`)
+
+    }
 
   return (
     <main className="flex flex-row mx-auto">

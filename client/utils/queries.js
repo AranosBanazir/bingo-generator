@@ -19,9 +19,11 @@ export const ME = gql`
             cards {
                 completed
                 _id
+                game
                 squares {
                     content
                     position
+                    completed
                     _id
                 }
             }

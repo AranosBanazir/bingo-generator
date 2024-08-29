@@ -5,12 +5,15 @@ import {ME} from '../../utils/queries'
 
 const UserContextProvider = ({children}) => {
     const {loading, error, data} = useQuery(ME)
-
+    const [userData, setUserData] = useState(null)
     
-    const userData = data ? data?.me : {}
+    useEffect(()=>{
+        setUserData(data?.me)
+    }, [])
 
+    console.log(userData)
     return (
-        <UserContext.Provider value={{userData}}>
+        <UserContext.Provider value={{userData, setUserData}}>
             {children}
         </UserContext.Provider>
     )

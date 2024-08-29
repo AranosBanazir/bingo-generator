@@ -22,15 +22,22 @@ const typeDefs =`
 
     type Card{
         _id: ID!
-        squares: [Square]
+        squares: [PositionalSquare]
         completed: Boolean
         owner: ID!
+        game: ID
     }
 
     type Square{
         _id: ID!
         content: String!
+    }
+    
+    type PositionalSquare{
+        _id: ID!
+        content: String!
         position: String!
+        completed: Boolean
     }
     
     type Auth {
@@ -63,6 +70,7 @@ const typeDefs =`
         createCard(gameId: ID!): Card
 
         addSquare(content: String!, gameId: ID!): Square
+        confirmSquare(squareId: ID!, cardId: ID!): PositionalSquare
         deleteSquare(_id: ID!): Square
     }
 `

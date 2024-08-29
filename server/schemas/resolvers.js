@@ -114,6 +114,25 @@ const resolvers = {
             }
             throw new GraphQLError('You must be logged in to create a card.')
         },
+        confirmSquare: async (parents, { cardId , squareId}, context)=>{
+            if (context.user){
+                const card = await Card.findById(cardId).populate('squares')
+
+                const {squares} = card
+                let chosenSquare;
+                for (const square of squares){
+                    if (square._id == squareId){
+                        square.completed = true
+                        chosenSquare = square
+                    }
+                }
+
+                const updatedCard = await Card.findByIdAndUpdate(cardId, {squares})
+
+                return chosenSquare
+            }
+            throw AuthenticationError
+        },
         addFriend: async (parent, {username}, context) =>{
             if (context.user){
                 const currentUser = await User.findById(context.user._id)
