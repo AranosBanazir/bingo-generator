@@ -6,14 +6,11 @@ import {ME} from '../../utils/queries'
 const UserContextProvider = ({children}) => {
     const {loading, error, data} = useQuery(ME)
 
-    const userData = data ? data : {}
+    
+    const userData = data ? data?.me : {}
 
-    console.log(userData)
-
-
-    // console.log(data)
     return (
-        <UserContext.Provider value={{}}>
+        <UserContext.Provider value={{userData}}>
             {children}
         </UserContext.Provider>
     )

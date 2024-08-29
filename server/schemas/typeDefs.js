@@ -43,6 +43,7 @@ const typeDefs =`
         getGameSquares(gameId: ID!): [Square]
         getUserSquares(userId: ID!): [Square]
         getGames: [Game]
+        getGame(gameId: ID!): Game
     }
 
     type Mutation {

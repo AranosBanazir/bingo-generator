@@ -20,6 +20,14 @@ const resolvers = {
         getGames: async () =>{
             const games = await Game.find()
             return games
+        },
+        getGame: async (parent, {gameId}, context) =>{
+            if (context.user){
+                const game = await Game.findById(gameId)
+                return game
+            }
+
+            throw AuthenticationError
         }
     },
     Mutation:{

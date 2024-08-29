@@ -38,6 +38,15 @@ db.once('open', async () => {
         users: [users[0]._id, users[1]._id, users[2]._id],
         squares: squares
      })
+     const user1 = await User.findByIdAndUpdate(users[0]._id,{
+        $addToSet: {games: newGame._id}
+     })
+     const user2 = await User.findByIdAndUpdate(users[1]._id,{
+      $addToSet: {games: newGame._id}
+   })
+    const user3 = await User.findByIdAndUpdate(users[2]._id,{
+      $addToSet: {games: newGame._id}
+  })
    }
 
 
