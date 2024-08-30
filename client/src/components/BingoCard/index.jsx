@@ -1,25 +1,28 @@
 import { useMutation } from "@apollo/client"
 import { CONFIRM_SQUARE } from "../../../utils/mutations"
+import { ME } from "../../../utils/queries"
+
+const BingoCard = ({card, hideMarks}) =>{
+    const [confirmSquare] = useMutation(CONFIRM_SQUARE)
 
 
-const BingoCard = ({card}) =>{
-    const [confirmSquare, {loading, error, data}] = useMutation(CONFIRM_SQUARE)
-
-
-    if (!card.squares) return <>Loading...</>
+    // if (!card.squares) return <>Loading...</>
 
     const handleConfirmSquare = async (e) =>{
         e.preventDefault()
         const {squareid: squareId} = e.target.dataset
-        console.log(e.target.dataset)
+        const targetSquare = document.getElementById(squareId)
+        targetSquare.parentNode.classList.toggle('square')
+        targetSquare.parentNode.classList.toggle('square-completed')
+
         try{
             confirmSquare({
                 variables:{
                     squareId,
                     cardId: card._id
-                }
-            }).then(res=>{
-                console.log(res.json())
+                }, refetchQueries: [ME, 'Me']
+            }).then(({data})=>{
+
             })
         }catch(err){
             console.err(err)
@@ -28,24 +31,23 @@ const BingoCard = ({card}) =>{
 
     return (
         <>
-        <div className="grid grid-rows-5 grid-cols-5 mt-10 max-h-[770px] max-w-[750px] mx-auto ">
-            {card?.squares.map(square=>{
-                
+        <div className="grid grid-rows-5 grid-cols-5 mt-10 max-h-[770px] max-w-[750px] mx-auto bingo-card" key={card._id}>
+            {card?.squares?.map(square=>{
                return square.position === 'c2' ? (
                 <>
-                    <div    key={square._id} className="square min-w-[150px] min-h-[150px] max-w-[150px] max-h-[150px] text-center justify-center" data-pos={square.position}>
-                        <p className="square-content" onClick={handleConfirmSquare} data-squareId={square._id}>
-                            {square.completed ?  <svg 
-                                className="checkmark" 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                viewBox="0 0 52 52"> 
-                                <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none"/> 
-                                <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                                </svg>: <></>
-                            }
+                {square.completed && !hideMarks ? 
+                    <div key={square._id} className="square-completed min-w-[150px] min-h-[150px] max-w-[150px] max-h-[150px] text-center justify-center" data-pos={square.position}>
+                        <p className="square-content" onClick={handleConfirmSquare} data-squareid={square._id} id={square._id}>
+                            {square.content}
+                        </p>
+                    </div> 
+                    :                 
+                    <div key={square._id} className="square min-w-[150px] min-h-[150px] max-w-[150px] max-h-[150px] text-center justify-center" data-pos={square.position}>
+                        <p className="square-content" onClick={handleConfirmSquare} data-squareid={square._id} id={square._id}>
                             {square.content}
                         </p>
                     </div>
+                    }
 
                     <div key={'free'} className="freespace min-w-[150px] min-h-[150px] max-w-[150px] max-h-[150px] text-center justify-center">
                         <p className="min-h-full text-center justify-center overflow-auto" >
@@ -53,20 +55,27 @@ const BingoCard = ({card}) =>{
                     </div>
                     </>
                 ) : (
+                    <>
+                    {square.completed && !hideMarks ?  ( 
+                    <>
+                        <div key={square._id} className="square-completed min-w-[150px] min-h-[150px] max-w-[150px] max-h-[150px]">
+                            <p className="square-content" onClick={handleConfirmSquare} data-squareid={square._id} id={square._id}>
+                                {square.content}
+                            </p>
+                        </div>
+                    </>
+                    ) : (
+                        <>
+                        <div key={square._id} className="square min-w-[150px] min-h-[150px] max-w-[150px] max-h-[150px]">
+                            <p className="square-content" onClick={handleConfirmSquare} data-squareid={square._id} id={square._id}>
+                                {square.content}
+                            </p>
+                        </div>
+                        </>
+                    )}
+                    </>
                     
-                    <div key={square._id} className="square min-w-[150px] min-h-[150px] max-w-[150px] max-h-[150px]">
-                        <p className="square-content text-center justify-center  text-wrap" onClick={handleConfirmSquare} data-squareId={square._id}>
-                        {square.completed ?  <svg 
-                            className="checkmark" 
-                            xmlns="http://www.w3.org/2000/svg" 
-                            viewBox="0 0 52 52"> 
-                            <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none"/> 
-                            <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                            </svg>: <></>
-                        }
-                            {square.content}
-                        </p>
-                    </div>
+
                     
                 )
             })}

@@ -17,6 +17,7 @@ export const CREATE_CARD = gql`
             squares {
                 position
                 content
+                _id
             }
         }
     }
@@ -26,6 +27,7 @@ export const CONFIRM_SQUARE = gql`
     mutation ConfirmSquare($squareId: ID!, $cardId: ID!) {
         confirmSquare(squareId: $squareId, cardId: $cardId) {
             completed
+            _id
         }
     }
 `
