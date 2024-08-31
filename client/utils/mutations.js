@@ -31,3 +31,25 @@ export const CONFIRM_SQUARE = gql`
         }
     }
 `
+
+
+export const CREATE_GAME = gql`
+    mutation CreateGame($title: String!) {
+        createGame(title: $title) {
+            _id
+            title
+        }
+    }
+`
+
+export const ADD_SQUARE = gql`
+    mutation AddSquare($content: String!, $gameId: ID!) {
+        addSquare(content: $content, gameId: $gameId) {
+            _id
+            squares {
+            _id
+            content
+            }
+        }
+    }
+`

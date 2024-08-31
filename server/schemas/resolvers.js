@@ -23,7 +23,7 @@ const resolvers = {
         },
         getGame: async (parent, {gameId}, context) =>{
             if (context.user){
-                const game = await Game.findById(gameId)
+                const game = await Game.findById(gameId).populate('squares').populate('users')
                 return game
             }
 
@@ -114,7 +114,25 @@ const resolvers = {
             }
             throw new GraphQLError('You must be logged in to create a card.')
         },
+        addSquare: async (parent, {gameId, content}, context)=>{
+            if (context.user){
+       
+                const newSquare = await Square.create({
+                    content,
+                    owner: context.user._id
+
+                })
+
+                const game = await Game.findByIdAndUpdate(gameId, {
+                    $addToSet: {squares: newSquare._id}
+                }).populate('squares')
+
+                return game
+            }
+            throw AuthenticationError
+        },
         confirmSquare: async (parents, { cardId , squareId}, context)=>{
+            //this is a toggle that will set a square to false if already true
             if (context.user){
                 const card = await Card.findById(cardId).populate('squares')
 
@@ -122,8 +140,13 @@ const resolvers = {
                 let chosenSquare;
                 for (const square of squares){
                     if (square._id == squareId){
-                        square.completed = true
-                        chosenSquare = square
+                        if (!square.completed){
+                            square.completed = true
+                            chosenSquare = square
+                        }else{
+                            square.completed = false
+                            chosenSquare = square
+                        }
                     }
                 }
 
@@ -196,6 +219,22 @@ const resolvers = {
                 })
 
                 return removedFriend
+            }
+            throw AuthenticationError
+        },
+        createGame: async (parent, {title}, context) =>{
+            if (context.user){
+
+               const newGame = await Game.create({
+                    title,
+                    owner: context.user._id
+                 })
+
+              await User.findByIdAndUpdate(context.user._id, {
+                $addToSet: {games: newGame._id}
+                })
+
+               return newGame
             }
             throw AuthenticationError
         },

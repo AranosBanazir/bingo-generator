@@ -42,9 +42,14 @@ export const GET_GAME = gql`
             title
             users {
                 _id
+                username
             }
             cards {
                 _id  
+            }
+            squares{
+                _id
+                content
             }     
         }
     }

@@ -20,6 +20,8 @@ const typeDefs =`
         squares: [Square]
     }
 
+
+
     type Card{
         _id: ID!
         squares: [PositionalSquare]
@@ -62,6 +64,7 @@ const typeDefs =`
         removeFriend(username: String!): User
         rejectFriendInvite(username: String!): User
 
+        createGame(title: String!): Game
         gameInvite(gameId: ID!, username: String!): Game
         acceptGameInvite(gameId: ID!): Game
         rejectGameInvite(gameId: ID!): Game
@@ -69,7 +72,7 @@ const typeDefs =`
 
         createCard(gameId: ID!): Card
 
-        addSquare(content: String!, gameId: ID!): Square
+        addSquare(content: String!, gameId: ID!): Game
         confirmSquare(squareId: ID!, cardId: ID!): PositionalSquare
         deleteSquare(_id: ID!): Square
     }

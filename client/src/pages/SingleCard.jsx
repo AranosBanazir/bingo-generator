@@ -4,6 +4,7 @@ import { useQuery, useMutation} from "@apollo/client";
 import { GET_GAME, ME } from "../../utils/queries";
 import { CREATE_CARD } from "../../utils/mutations";
 import BingoCard from "../components/BingoCard";
+import SquareAddForm from "../components/AddASquare.jsx";
 
 
 const SingleCardPage = () => {
@@ -12,6 +13,7 @@ const SingleCardPage = () => {
   const {loading, error, data} = useQuery(ME)
   const userData = data?.me
   let { data: gameData } = useQuery(GET_GAME, { variables: { gameId } });
+  let gameReady = false
   const [createCard, {error: cardError, loading: cardLoading, data: cardData}] = useMutation(CREATE_CARD, {
     variables: {gameId}, refetchQueries: [ME, 'Me']
   })
@@ -23,8 +25,13 @@ const SingleCardPage = () => {
   let rightCard = {}
 
  
-
+  if (gameData.squares && gameData.squares.length < 24){
+    gameReady = false
+  }else if (gameData.squares && gameData.squares.length >= 24){
+    gameReady = true
+  }
  
+  
 
 if (userCards.length > 0){
     for (const card of userCards) {
@@ -55,8 +62,18 @@ if (userCards.length > 0){
 
   return (
     <main className="container flex flex-col mx-auto">
-        <h1 className="text-6xl font-bold self-center mt-10">{`Game: ${gameData.title}`} </h1>
-        {!hasACard ? (
+        <h1 className="text-6xl font-bold self-center mt-10">{`Game: ${gameData.title || 'Loading...'}`} </h1>
+
+        {
+        !gameReady ? 
+        <>
+        <h2 className="self-center mt-10 text-4xl">Your game needs more squares!</h2>
+        <SquareAddForm gameId={gameId} gameData={gameData}/>
+        </>
+        
+        :
+        
+        !hasACard ? (
             <div className="flex flex-col justify-center items-center min-h-[70vh]">
                 <h2 className="text-4xl">You don't have a card for this game!</h2>
                 <button onClick={generateCard} className="btn btn-primary mt-10">Generate Card!</button>
