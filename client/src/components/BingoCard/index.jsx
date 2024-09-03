@@ -1,10 +1,11 @@
 import { useMutation } from "@apollo/client"
 import { CONFIRM_SQUARE } from "../../../utils/mutations"
 import { ME } from "../../../utils/queries"
+import { useEffect, useState } from "react"
 
 const BingoCard = ({card, hideMarks}) =>{
     const [confirmSquare] = useMutation(CONFIRM_SQUARE)
-
+    const [borderState, setBorderState] = useState('bingo-card')
 
     // if (!card.squares) return <>Loading...</>
 
@@ -29,9 +30,15 @@ const BingoCard = ({card, hideMarks}) =>{
         }
     }
 
+    useEffect(()=>{
+        if (card.completed){
+            setBorderState('winning-card')
+        }
+    },[])
+
     return (
         <>
-        <div className="grid grid-rows-5 grid-cols-5 mt-10 md:max-h-[770px] md:max-w-[750px] mx-auto bingo-card max-w-[400px]" key={card._id}>
+        <div className={`grid grid-rows-5 grid-cols-5 mt-10 md:max-h-[770px] md:max-w-[750px] mx-auto max-w-[400px] ${borderState}`} key={card._id} id="bingo-card">
             {card?.squares?.map(square=>{
                return square.position === 'c2' ? (
                 <>

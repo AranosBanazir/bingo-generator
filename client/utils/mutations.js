@@ -24,6 +24,15 @@ export const CREATE_CARD = gql`
 `
 
 
+export const SUBMIT_CARD = gql`
+    mutation SubmitCard($cardId: ID!) {
+        submitCard(cardId: $cardId) {
+            completed
+        }
+    }
+`
+
+
 export const DELETE_CARD = gql`
     mutation DeleteCard($gameId: ID!, $cardId: ID!) {
         deleteCard(gameId: $gameId, cardId: $cardId) {

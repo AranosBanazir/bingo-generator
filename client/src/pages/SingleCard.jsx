@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useQuery, useMutation} from "@apollo/client";
 import { GET_GAME, ME } from "../../utils/queries";
-import { CREATE_CARD, DELETE_CARD } from "../../utils/mutations";
+import { CREATE_CARD, DELETE_CARD, SUBMIT_CARD } from "../../utils/mutations";
 import BingoCard from "../components/BingoCard";
 import SquareAddForm from "../components/AddASquare.jsx";
 import { TOGGLE_GAME_READY } from "../../utils/mutations";
@@ -24,6 +24,10 @@ const SingleCardPage = () => {
     variables: {gameId}, refetchQueries: [GET_GAME, 'GetGame']
   })
   const [deleteCard] = useMutation(DELETE_CARD, {
+    refetchQueries: [ME, 'Me']
+  })
+
+  const [submitCard] = useMutation(SUBMIT_CARD, {
     refetchQueries: [ME, 'Me']
   })
 
@@ -80,8 +84,25 @@ if (userCards.length > 0){
 
 
 
- const handleCardSubmit = () =>{
-
+ const handleCardSubmit = async () =>{
+  try {
+      await submitCard({
+        variables:{
+          cardId: activeCard._id
+        }
+      }).then(({data})=>{
+        const bingoCard = document.getElementById('bingo-card')
+        if (data.submitCard.completed){
+          bingoCard.classList.toggle('winning-card')
+          bingoCard.classList.toggle('bingo-card')
+        }else{
+          bingoCard.classList.toggle('bingo-card')
+          bingoCard.classList.toggle('winning-card')
+        }
+      })
+  } catch (error) {
+    console.error(error)
+  }
  }
 
  const handleCardDelete = async () =>{

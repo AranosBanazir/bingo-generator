@@ -125,6 +125,58 @@ const resolvers = {
             }
             throw new GraphQLError('You must be logged in to create a card.')
         },
+        submitCard: async (parent, {cardId}, context) =>{
+            if (context.user){
+              const validWins = [
+                //horizontal wins
+                ["a1", "a2", "a3", "a4", "a5"],
+                ["b1", "b2", "b3", "b4", "b5"],
+                ["c1", "c2", "c4", "c5"],
+                ["d1", "d2", "d3", "d4", "d5"],
+                ["e1", "e2", "e3", "e4", "e5"],
+
+                //diagonal wins
+                ["e1", "d2", "b4", "a5"],
+                ["a1", "b2", "d4", "e5"],
+
+                //vertical wins
+                ["a1", "b1", "c1", "d1", "e1"],
+                ["a2", "b2", "c2", "d2", "e2"],
+                ["a3", "b3", "d3", "e3"],
+                ["a4", "b4", "c4", "d4", "e4"],
+                ["a5", "b5", "c5", "d5", "e5"],
+              ]
+
+              const card = await Card.findById(cardId).populate('squares')
+
+              //returns an array of completed squares
+              const checkedSquares = card.squares
+                                         .filter(square=> square.completed)
+                                         .map(square=>square.position)
+              
+              let winningCard = false                                         
+              validWins.forEach(winCondition=>{
+                  let winningPositionCount = 0
+                for (const position of winCondition){
+                        if (checkedSquares.includes(position)){
+                            winningPositionCount += 1
+                        }
+                        if (winningPositionCount === winCondition.length){
+                            winningCard = true
+                            break 
+                        }
+                    
+                }
+              })
+              
+              card.completed = winningCard
+              card.save()
+
+              return card
+
+            }
+            throw AuthenticationError
+        },
         deleteCard: async (parent, {gameId, cardId}, context) =>{
             if (context.user){
                 const card = await Card.findByIdAndDelete(cardId)

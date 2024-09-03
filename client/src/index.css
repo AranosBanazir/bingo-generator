@@ -147,11 +147,22 @@ html {
   border-bottom: 3px solid #c59f60;
 }
 
-.finished-bingo-card{
-  border-top: 3px solid #25e464;
-  border-left: 3px solid #25e464;
-  border-right: 5px solid #25e464;
-  border-bottom: 3px solid #25e464;
+.bingo-card{
+  border-top: 3px solid #c59f60;
+  border-left: 3px solid #c59f60;
+  border-right: 5px solid #c59f60;
+  border-bottom: 3px solid #c59f60;
+}
+
+.winning-card{
+  --angle: 0deg;
+  border-top: 3px solid #c59f60;
+  border-left: 3px solid #c59f60;
+  border-right: 5px solid #c59f60;
+  border-bottom: 3px solid #c59f60;
+	border-image: conic-gradient(from var(--angle), red, yellow, lime, aqua, blue, magenta, red, yellow, lime, aqua, blue, magenta, red, yellow, lime, aqua, blue, magenta, red) 1;
+	
+	animation: 5s rotate linear infinite;
 }
 
 .form{
@@ -196,4 +207,16 @@ html {
         height: 130px;
         width: 130px;
     }
+}
+
+@keyframes rotate {
+	to {
+		--angle: 360deg;
+	}
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
 }

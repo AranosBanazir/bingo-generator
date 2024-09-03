@@ -74,7 +74,9 @@ const typeDefs =`
         toggleGameReady(gameId: ID!): Game
 
         createCard(gameId: ID!): Card
+        submitCard(cardId: ID!): Card
         deleteCard(gameId: ID!, cardId: ID!): Card
+
 
         addSquare(content: String!, gameId: ID!): Game
         confirmSquare(squareId: ID!, cardId: ID!): PositionalSquare
