@@ -5,28 +5,32 @@ import { GET_GAME, ME } from "../../utils/queries";
 import { CREATE_CARD } from "../../utils/mutations";
 import BingoCard from "../components/BingoCard";
 import SquareAddForm from "../components/AddASquare.jsx";
-
+import { TOGGLE_GAME_READY } from "../../utils/mutations";
 
 const SingleCardPage = () => {
   const navigate = useNavigate();
   const { gameId } = useParams();
   const {loading, error, data} = useQuery(ME)
   const userData = data?.me
-  let { data: gameData } = useQuery(GET_GAME, { variables: { gameId } });
-  let gameReady = gameData?.ready || false
+  let { data: gameData } = useQuery(GET_GAME, { variables: { gameId }});
+  let gameReady = false //setting the default
+  let gameOwner = false //setting the default
+  let hasACard = false; //setting the default
   const [createCard, {error: cardError, loading: cardLoading, data: cardData}] = useMutation(CREATE_CARD, {
-    variables: {gameId}, refetchQueries: [ME, 'Me']
+    variables: {gameId}, refetchQueries: [ME, 'Me'], refetchQueries: [GET_GAME, 'GetGame']
   })
-  let hasACard = false;
+  const [toggleGameReady, {error: toggleError, loading: toggleLoading, data: toggleData}] = useMutation(TOGGLE_GAME_READY, {
+    variables: {gameId}, refetchQueries: [GET_GAME, 'GetGame']
+  })
   const userCards = userData?.cards ? userData?.cards : [];
   gameData = gameData?.getGame ? gameData.getGame : [];
 
   let rightCard = {}
 
   //setting game state based on number of squares
-  if (gameData.squares && gameData.squares.length < 24){
+  if (gameData?.squares && gameData?.squares.length < 24){
     gameReady = false
-  }else if (gameData.squares && gameData.squares.length >= 24){
+  }else if (gameData?.squares && gameData?.squares?.length >= 24 && gameData?.ready === true){
     gameReady = true
   }
  
@@ -43,12 +47,18 @@ if (userCards.length > 0){
     }
 }
 
-  console.log(gameData)
+  //setting the game owner to true
+  //to display specific options for the game owner
+  if (gameData?.owner === userData?._id){
+    gameOwner = true
+  }
+
+
 
   const generateCard = async () =>{
     let {data} = await createCard()
     data = data?.createCard
-    setActiveCard(data)
+    rightCard = data
     
   }
 
@@ -59,10 +69,13 @@ if (userCards.length > 0){
     setHideMarks(e.target.checked)
  }
 
+ const handleToggleGameReady = async () => {
+    await toggleGameReady()
+ }
 
   return (
     <main className="container flex flex-col mx-auto">
-        <h1 className="text-6xl font-bold self-center mt-10">{`Game: ${gameData.title || 'Loading...'}`} </h1>
+        <h1 className="md:text-6xl text-3xl font-bold self-center mt-10">{`${gameData.title || 'Loading...'}`} </h1>
         {cardError ? 
         <div role="alert" className="alert alert-error max-w-[30vw] self-center mt-10" id="error-div">
           <button onClick={(e)=>{
@@ -83,10 +96,20 @@ if (userCards.length > 0){
           </button>
           <span>{cardError.message}</span>
         </div> : <></>}
+        {gameData?.squares?.length >= 24 && gameOwner ? 
+        <>
+          <div className="flex flex-col items-center">
+            <h2 className="mt-3">Your game has enough squares!</h2>
+            <button onClick={handleToggleGameReady} className="btn btn-primary mt-3">Start Game!</button>
+          </div>
+        </>
+          : 
+        <></>
+        }
         {
         !gameReady ? 
         <>
-        <h2 className="self-center mt-10 text-4xl">Your game needs more squares!</h2>
+        <h2 className="self-center mt-10 md:text-4xl text-2xl">Your game needs more squares!</h2>
         <SquareAddForm gameId={gameId} gameData={gameData}/>
         </>
         

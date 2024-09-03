@@ -53,3 +53,11 @@ export const ADD_SQUARE = gql`
         }
     }
 `
+
+export const TOGGLE_GAME_READY = gql`
+    mutation ToggleGameReady($gameId: ID!) {
+        toggleGameReady(gameId: $gameId) {
+            ready
+        }
+    }
+`

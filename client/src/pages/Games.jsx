@@ -29,7 +29,7 @@ const GamesPage = () => {
     try {
         await createGame({variables: {
             title: newGameTitle
-        }, refetchQueries: [ME, 'me']}).then(({data})=>{
+        }, refetchQueries: [ME, 'Me']}).then(({data})=>{
             console.log(data)
         })
     } catch (error) {

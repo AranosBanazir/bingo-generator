@@ -51,7 +51,8 @@ export const GET_GAME = gql`
                 _id
                 content
             }
-            ready     
+            ready
+            owner
         }
     }
 

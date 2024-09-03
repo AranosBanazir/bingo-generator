@@ -15,6 +15,7 @@ const SquareAddForm = ({gameId, gameData}) =>{
 
     const handleSquareSubmit = async (e) =>{
         e.preventDefault()
+        if (squareContent === '' || !squareContent) return
         try {
             await addSquare({variables:{
                 content: squareContent || 'bad square',
@@ -24,7 +25,7 @@ const SquareAddForm = ({gameId, gameData}) =>{
             console.log(error)
         }
     }
-
+    // console.log(gameData)
     return (
         <div className="self-center mt-20">
             <form className="flex flex-col gap-3" onSubmit={handleSquareSubmit}>
@@ -32,12 +33,18 @@ const SquareAddForm = ({gameId, gameData}) =>{
                 <button className="btn btn-info w-[50%] self-end">Submit Square</button>
             </form>
 
-        <section className="grid grid-cols-5">
-            {/* Map through the squares in a nice section to show current squares */}
+            <h2 className="text-3xl mt-5">Current Squares:</h2>
+        <section className="grid md:grid-cols-5 grid-cols-2 gap-4 mt-5">
+            {gameData?.squares?.map(square=>{
+              return (
+                <div key={square._id} className="square sm:min-w-[150px] sm:min-h-[150px] max-w-[150px] max-h-[150px] text-center justify-center" >
+                    <p className="square-content" data-squareid={square._id} id={square._id}>
+                        {square.content}
+                    </p>
+                </div>
+              )
+            })}
         </section>
-
-
-
         </div>
     )
 }

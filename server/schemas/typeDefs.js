@@ -19,6 +19,7 @@ const typeDefs =`
         users: [User]
         squares: [Square]
         ready: Boolean
+        owner: ID!
     }
 
 

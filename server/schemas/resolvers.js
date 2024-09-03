@@ -120,6 +120,12 @@ const resolvers = {
         },
         addSquare: async (parent, {gameId, content}, context)=>{
             if (context.user){
+
+                const game = await Game.findById(gameId)
+
+                if (game.ready === true){
+                    return new GraphQLError('Game has already started!')
+                }
        
                 const newSquare = await Square.create({
                     content,
@@ -127,13 +133,13 @@ const resolvers = {
 
                 })
 
-                const game = await Game.findByIdAndUpdate(gameId, {
+                const updatedGame = await Game.findByIdAndUpdate(gameId, {
                     $addToSet: {squares: newSquare._id}
                 },{
                     new: true
                 }).populate('squares')
 
-                return game
+                return updatedGame
             }
             throw AuthenticationError
         },
