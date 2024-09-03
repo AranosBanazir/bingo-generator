@@ -18,6 +18,7 @@ const typeDefs =`
         cards: [Card]
         users: [User]
         squares: [Square]
+        ready: Boolean
     }
 
 
@@ -69,6 +70,7 @@ const typeDefs =`
         acceptGameInvite(gameId: ID!): Game
         rejectGameInvite(gameId: ID!): Game
         leaveGame(gameId: ID!): Game
+        toggleGameReady(gameId: ID!): Game
 
         createCard(gameId: ID!): Card
 

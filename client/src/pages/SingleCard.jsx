@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import {  useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation} from "@apollo/client";
 import { GET_GAME, ME } from "../../utils/queries";
 import { CREATE_CARD } from "../../utils/mutations";
@@ -13,18 +13,17 @@ const SingleCardPage = () => {
   const {loading, error, data} = useQuery(ME)
   const userData = data?.me
   let { data: gameData } = useQuery(GET_GAME, { variables: { gameId } });
-  let gameReady = false
+  let gameReady = gameData?.ready || false
   const [createCard, {error: cardError, loading: cardLoading, data: cardData}] = useMutation(CREATE_CARD, {
     variables: {gameId}, refetchQueries: [ME, 'Me']
   })
   let hasACard = false;
   const userCards = userData?.cards ? userData?.cards : [];
-
   gameData = gameData?.getGame ? gameData.getGame : [];
 
   let rightCard = {}
 
- 
+  //setting game state based on number of squares
   if (gameData.squares && gameData.squares.length < 24){
     gameReady = false
   }else if (gameData.squares && gameData.squares.length >= 24){
@@ -32,7 +31,8 @@ const SingleCardPage = () => {
   }
  
   
-
+//checking if a user has any cards, and if they do
+//checking if they have a card for this game
 if (userCards.length > 0){
     for (const card of userCards) {
       if (card?.game == gameId){
@@ -43,7 +43,7 @@ if (userCards.length > 0){
     }
 }
 
-
+  console.log(gameData)
 
   const generateCard = async () =>{
     let {data} = await createCard()
@@ -63,7 +63,26 @@ if (userCards.length > 0){
   return (
     <main className="container flex flex-col mx-auto">
         <h1 className="text-6xl font-bold self-center mt-10">{`Game: ${gameData.title || 'Loading...'}`} </h1>
-
+        {cardError ? 
+        <div role="alert" className="alert alert-error max-w-[30vw] self-center mt-10" id="error-div">
+          <button onClick={(e)=>{
+              const alertDiv = document.getElementById('error-div')
+              alertDiv.classList.add('hidden')
+          }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          </button>
+          <span>{cardError.message}</span>
+        </div> : <></>}
         {
         !gameReady ? 
         <>

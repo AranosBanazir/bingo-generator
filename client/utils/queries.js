@@ -50,7 +50,8 @@ export const GET_GAME = gql`
             squares{
                 _id
                 content
-            }     
+            }
+            ready     
         }
     }
 

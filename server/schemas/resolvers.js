@@ -12,6 +12,7 @@ const resolvers = {
                                        .populate('cards')
                                        .populate('gameInvites')
                                        .populate('friendInvites')
+                   
                 return user
             }
             
@@ -52,6 +53,9 @@ const resolvers = {
                 const user = await User.findById(context.user._id).populate('cards')
                 const game = await Game.findById(gameId).populate('squares')
 
+                if (!game.ready){
+                    return new GraphQLError('This game is not ready yet!')
+                }
                 
                 for (const card of user.cards){
                     if (card.game == gameId){
@@ -125,6 +129,8 @@ const resolvers = {
 
                 const game = await Game.findByIdAndUpdate(gameId, {
                     $addToSet: {squares: newSquare._id}
+                },{
+                    new: true
                 }).populate('squares')
 
                 return game
@@ -225,9 +231,12 @@ const resolvers = {
         createGame: async (parent, {title}, context) =>{
             if (context.user){
 
+               const currentUser = await User.findById(context.user._id)
+
                const newGame = await Game.create({
                     title,
-                    owner: context.user._id
+                    owner: context.user._id,
+                    users: [currentUser._id]
                  })
 
               await User.findByIdAndUpdate(context.user._id, {
@@ -242,7 +251,7 @@ const resolvers = {
             if (context.user){
                 const game = await Game.findById(gameId)
 
-                console.log('owner: ', game.owner, 'current User: ', context.user._id)
+              
                 //Validating the game owner is inviting
                 if (game.owner == context.user._id){
                     //send the invite
@@ -294,6 +303,15 @@ const resolvers = {
                     $pull: {users: currentUser._id}
                 })
             
+                return game
+            }
+            throw AuthenticationError
+        },
+        toggleGameReady: async (parent, {gameId}, context)=>{
+            if (context.user){
+                const game = await Game.findById(gameId)
+                game.toggleReady()
+
                 return game
             }
             throw AuthenticationError
