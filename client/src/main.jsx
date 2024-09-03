@@ -1,13 +1,45 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
+import ReactDOM from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom/dist'
 import './index.css'
 
 
+import App from './App.jsx'
+import LoginPage from './pages/Login.jsx'
+import ProfilePage from './pages/Profile.jsx'
+import SingleCardPage from './pages/SingleCard.jsx'
+import GamesPage from './pages/Games.jsx'
+import GameManager from './pages/GameManager.jsx'
+//TODO: need to expand the router to work with new pages
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App />,
+    error: <Error />,
+    children: [
+     {
+      index: true,
+      element: <LoginPage/>
+     },
+     {
+      path: '/profile',
+      element: <ProfilePage/>
+     },
+     {
+      path: '/card/:gameId',
+      element: <SingleCardPage/>
+     },
+     {
+      path: '/games',
+      element: <GamesPage/>
+     },
+     {
+      path: '/manage/:gameId',
+      element: <GameManager/>
+     }
+    ]
+  }
+])
 
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <RouterProvider router={router} />
 )

@@ -8,9 +8,7 @@ export const ME = gql`
             games {
                 _id
                 title
-                users {
-                    username
-                }
+                owner
             }
             gameInvites {
                 title
@@ -22,9 +20,11 @@ export const ME = gql`
             cards {
                 completed
                 _id
+                game
                 squares {
                     content
                     position
+                    completed
                     _id
                 }
             }
@@ -34,4 +34,27 @@ export const ME = gql`
             }
         }
     }
+`
+
+
+export const GET_GAME = gql`
+    query GetGame($gameId: ID!) {
+        getGame(gameId: $gameId) {
+            title
+            users {
+                _id
+                username
+            }
+            cards {
+                _id  
+            }
+            squares{
+                _id
+                content
+            }
+            ready
+            owner
+        }
+    }
+
 `

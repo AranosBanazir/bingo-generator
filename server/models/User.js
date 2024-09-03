@@ -39,7 +39,6 @@ userSchema.pre('save', async function (next) {
 userSchema.pre('updateOne', async function(next){
   for (const person of this.friendInvites){
     const possibleFriend = await User.findById({_id: person}).populate('friendInvites')
-    console.log('THIS IS A TEST FOR PRE UPDATE')
     console.log(possibleFriend)
   }
   next()

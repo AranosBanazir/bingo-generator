@@ -1,11 +1,13 @@
-:root {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  min-height: 100vh;
+  min-width: 100vw;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,56 +15,212 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+  padding: 0;
+  margin: 0;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+body,
+html {
+
+  min-width: 100vw;
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.square {
+  background-image: url("/assets/square.png");
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+  text-wrap: wrap;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.sm-square {
+  background-image: url("/assets/sm-square.png");
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  font-weight: bold;
+  font-size: 12px;
+  text-wrap: wrap;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+.square-completed {
+  background-image: url("/assets/square-completed.png");
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+  text-wrap: wrap;
+}
+
+.sm-square-completed {
+  background-image: url("/assets/sm-square-completed.png");
+
+}
+
+.freespace {
+  background: url("/assets/freespace.png");
+}
+
+
+.square-content {
+  overflow-y: auto;
+  text-wrap: wrap;
+  word-wrap:  normal;
+  justify-content: center;
+  text-align: center;
+}
+
+
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: black;
+  fill:#e71203;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__circle__complete {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: black;
+  fill:#25e464;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 10% auto;
+  box-shadow: inset 0px 0px 0px black;
+  animation: fill 0.4s ease-in-out 0.4s forwards,
+    scale 0.3s ease-in-out 0.9s both;
+}
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
   }
-  a:hover {
-    color: #747bff;
+}
+@keyframes scale {
+  0%,
+  100% {
+    transform: none;
   }
-  button {
-    background-color: #f9f9f9;
+
+}
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #e71203;
   }
+}
+
+
+.bingo-card{
+  border-top: 3px solid #c59f60;
+  border-left: 3px solid #c59f60;
+  border-right: 5px solid #c59f60;
+  border-bottom: 3px solid #c59f60;
+}
+
+.bingo-card{
+  border-top: 3px solid #c59f60;
+  border-left: 3px solid #c59f60;
+  border-right: 5px solid #c59f60;
+  border-bottom: 3px solid #c59f60;
+}
+
+.winning-card{
+  --angle: 0deg;
+  border-top: 3px solid #c59f60;
+  border-left: 3px solid #c59f60;
+  border-right: 5px solid #c59f60;
+  border-bottom: 3px solid #c59f60;
+	border-image: conic-gradient(from var(--angle), red, yellow, lime, aqua, blue, magenta, red, yellow, lime, aqua, blue, magenta, red, yellow, lime, aqua, blue, magenta, red) 1;
+	
+	animation: 5s rotate linear infinite;
+}
+
+.form{
+  border: 10px solid black;
+}
+
+
+@media screen and (width <= 767px) {
+  .square-content{
+      height: 75px;
+      width: 75px;
+  }
+
+  .square{
+    background: url("/assets/sm-square.png");
+  }
+
+  .freespace{
+    background: url("/assets/sm-freespace.png");
+  }
+
+  .square-completed{
+    background: url("/assets/sm-square-completed.png");
+    
+  }
+
+ .freespace, .square-completed, .square {
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-weight: bold;
+    font-size: 14px;
+    text-wrap: wrap;
+  }
+}
+
+
+@media screen and (width >= 768px) {
+    .square-content{
+        height: 130px;
+        width: 130px;
+    }
+}
+
+@keyframes rotate {
+	to {
+		--angle: 360deg;
+	}
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.bordered{
+  border: 3px solid #25e464;
 }

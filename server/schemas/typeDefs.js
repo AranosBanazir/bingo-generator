@@ -18,19 +18,30 @@ const typeDefs =`
         cards: [Card]
         users: [User]
         squares: [Square]
+        ready: Boolean
+        owner: ID!
     }
+
+
 
     type Card{
         _id: ID!
-        squares: [Square]
+        squares: [PositionalSquare]
         completed: Boolean
         owner: ID!
+        game: ID
     }
 
     type Square{
         _id: ID!
         content: String!
+    }
+    
+    type PositionalSquare{
+        _id: ID!
+        content: String!
         position: String!
+        completed: Boolean
     }
     
     type Auth {
@@ -43,6 +54,7 @@ const typeDefs =`
         getGameSquares(gameId: ID!): [Square]
         getUserSquares(userId: ID!): [Square]
         getGames: [Game]
+        getGame(gameId: ID!): Game
     }
 
     type Mutation {
@@ -54,15 +66,21 @@ const typeDefs =`
         removeFriend(username: String!): User
         rejectFriendInvite(username: String!): User
 
+        createGame(title: String!): Game
         gameInvite(gameId: ID!, username: String!): Game
         acceptGameInvite(gameId: ID!): Game
         rejectGameInvite(gameId: ID!): Game
         leaveGame(gameId: ID!): Game
+        toggleGameReady(gameId: ID!): Game
 
         createCard(gameId: ID!): Card
+        submitCard(cardId: ID!): Card
+        deleteCard(gameId: ID!, cardId: ID!): Card
 
-        addSquare(content: String!, gameId: ID!): Square
-        deleteSquare(_id: ID!): Square
+
+        addSquare(content: String!, gameId: ID!): Game
+        confirmSquare(squareId: ID!, cardId: ID!): PositionalSquare
+        deleteSquare(squareId: ID!): Square
     }
 `
 
