@@ -8,7 +8,7 @@ import LoginPage from './pages/Login.jsx'
 import ProfilePage from './pages/Profile.jsx'
 import SingleCardPage from './pages/SingleCard.jsx'
 import GamesPage from './pages/Games.jsx'
-
+import GameManager from './pages/GameManager.jsx'
 //TODO: need to expand the router to work with new pages
 const router = createBrowserRouter([
   {
@@ -31,6 +31,10 @@ const router = createBrowserRouter([
      {
       path: '/games',
       element: <GamesPage/>
+     },
+     {
+      path: '/manage/:gameId',
+      element: <GameManager/>
      }
     ]
   }

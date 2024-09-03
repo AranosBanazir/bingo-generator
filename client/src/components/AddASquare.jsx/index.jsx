@@ -56,8 +56,8 @@ const SquareAddForm = ({gameId, gameData}) =>{
                 <button className="btn btn-info w-[20%] self-center">Submit Square</button>
             </form>
 
-            <h2 className="text-3xl mt-5">Current Squares {`(${gameData?.squares?.length})` || ''} :</h2>
-        <section className="grid md:grid-cols-5 grid-cols-2 gap-4 mt-5">
+            <h2 className="text-3xl mt-5">Current Squares {`(${gameData?.squares?.length || ''})` } :</h2>
+        <section className="grid md:grid-cols-5 grid-cols-3 gap-4 mt-5">
             {gameData?.squares?.map(square=>{
               return (
                 <div key={square._id} className="square md:min-w-[150px] md:min-h-[150px] md:max-w-[150px] md:max-h-[150px] min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px]" 

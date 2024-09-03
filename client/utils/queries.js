@@ -8,6 +8,7 @@ export const ME = gql`
             games {
                 _id
                 title
+                owner
             }
             gameInvites {
                 title

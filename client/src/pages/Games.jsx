@@ -14,6 +14,7 @@ const GamesPage = () => {
 
   const handleBingoClick = (e) => {
     const { id } = e.target.dataset;
+    console.log(e.target)
     if (!id) return;
     navigate(`/card/${id}`);
   };
@@ -35,6 +36,22 @@ const GamesPage = () => {
     }
 
   }
+  
+  const ownedGames = []
+  if (userData?.games){
+    for (const game of userData?.games){
+      if (userData?._id === game?.owner){
+        ownedGames.push(game?._id)
+      }
+    }
+  }
+
+  const handleManagementNavigate = (e) =>{
+    e.stopPropagation()
+    const { id } = e.target.dataset;
+    navigate(`/manage/${id}`)
+  }
+
 
   return (
     <>
@@ -53,7 +70,7 @@ const GamesPage = () => {
                 Game Title:
                 <input type="text" className="grow" placeholder="Daisy" onChange={handleNewGameTitle}/>
               </label>
-                <button className="btn btn-success">
+                <button className="btn btn-secondary">
                     Submit game
                 </button>
             </form>
@@ -63,19 +80,22 @@ const GamesPage = () => {
             {userData.games.map((game) => {
               return (
                 <div
-                  className="card card-compact bg-base-100 w-96 shadow-xl"
+                  className="card card-compact bg-base-100 w-96 shadow-xl min-h-[200px]"
                   key={game._id}
-                  onClick={handleBingoClick}
+
                 >
-                  <figure>
+                  {/* <figure>
                     <img
                       src="/assets/bingo-placeholder.png"
                       alt="Bingo Placeholder"
                       data-id={game._id}
                     />
-                  </figure>
-                  <div className="card-body">
+                  </figure> */}
+                  <div className="card-body"                   
+                    onClick={handleBingoClick}
+                    data-id={game._id}>
                     <h2 className="card-title self-center">{game.title}</h2>
+                    {ownedGames.includes(game._id) ? <button className="btn btn-secondary" onClick={handleManagementNavigate} data-id={game._id}>Manage</button>: <></>}
                   </div>
                 </div>
               );
