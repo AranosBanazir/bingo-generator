@@ -74,10 +74,11 @@ const typeDefs =`
         toggleGameReady(gameId: ID!): Game
 
         createCard(gameId: ID!): Card
+        deleteCard(gameId: ID!, cardId: ID!): Card
 
         addSquare(content: String!, gameId: ID!): Game
         confirmSquare(squareId: ID!, cardId: ID!): PositionalSquare
-        deleteSquare(_id: ID!): Square
+        deleteSquare(squareId: ID!): Square
     }
 `
 

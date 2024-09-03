@@ -52,7 +52,7 @@ const resolvers = {
             if (context.user){
                 const user = await User.findById(context.user._id).populate('cards')
                 const game = await Game.findById(gameId).populate('squares')
-
+                
                 if (!game.ready){
                     return new GraphQLError('This game is not ready yet!')
                 }
@@ -62,49 +62,56 @@ const resolvers = {
                         return new GraphQLError('You have already created a card for this game.')
                     }
                 }
-
+                
                 if (!game){
                     return new GraphQLError(`No Game Found With ID: ${gameId || 0}`)
                 }
-
+                
                 let positions = [
                     "a1", "a2", "a3", "a4", "a5",
                     "b1", "b2", "b3", "b4", "b5",
                     "c1", "c2", "c4", "c5", //c3 is our free space so its missing from the array
                     "d1", "d2", "d3", "d4", "d5",
                     "e1", "e2", "e3", "e4", "e5",
-                   
+                    
                 ]
                 const squares = game.squares
                 
                 let newCardSquares = [] //holds squares and positions
-                let usedSquares = []    //tracks used squares to remove dupes
-
+                let usedSquareIds = []    //tracks used squares to remove dupes
+                let allSquares = squares //so we can remove used squares from options...I 100% thought of this the first time and never timed out a request...
                 //gets a random squares content
                 //cards don't need to track Owner or ID from the square, just the content
                 const getRandomSquare = () =>{
-                    const rndIndex = Math.floor(Math.random() * squares.length)
-                    return squares[rndIndex].content
+                    const rndIndex = Math.floor(Math.random() * allSquares.length)
+                    const chosenSquare = allSquares[rndIndex]
+                     allSquares.splice(rndIndex, 1)
+                     return chosenSquare
                 }
-
-               
+                
+                
                 //loops through all the games squares until it builds a full card of 24 spaces
-
+                
+                
                 while (newCardSquares.length < 24) {
                     const nextSquare = getRandomSquare()
-                    if (!usedSquares.includes(nextSquare)){
-                        newCardSquares.push({content: nextSquare, position:positions[0]})
-                        usedSquares.push(nextSquare)
+                    if (!usedSquareIds.includes(nextSquare._id)){
+                        newCardSquares.push({content: nextSquare.content, position:positions[0]})
+                        usedSquareIds.push(nextSquare._id)
                         positions.shift()
                     }
+                   
                 }
 
+             
+                
+                
                 const newCard = await Card.create({
                     squares: newCardSquares,
                     owner: context.user._id,
                     game: gameId
                 })
-
+                
                 //Adding the card to the user and the game
                 const updateUser = await User.findByIdAndUpdate(context.user._id, {
                     $addToSet: {cards: newCard}
@@ -112,11 +119,27 @@ const resolvers = {
                 const updateGame = await Game.findByIdAndUpdate(gameId, {
                     $addToSet: {cards: newCard}
                 })
-
-
+                
+                
                 return newCard
             }
             throw new GraphQLError('You must be logged in to create a card.')
+        },
+        deleteCard: async (parent, {gameId, cardId}, context) =>{
+            if (context.user){
+                const card = await Card.findByIdAndDelete(cardId)
+                const currentUser = await User.findByIdAndUpdate(context.user._id, {
+                    $pull: {cards: cardId}
+                })
+                const game = await Game.findByIdAndUpdate(gameId, {
+                    $pull: {cards: cardId}
+                })
+
+
+
+                return card
+            }
+            throw AuthenticationError
         },
         addSquare: async (parent, {gameId, content}, context)=>{
             if (context.user){
@@ -140,6 +163,12 @@ const resolvers = {
                 }).populate('squares')
 
                 return updatedGame
+            }
+            throw AuthenticationError
+        },
+        deleteSquare: async (parent, {squareId}, context) =>{
+            if (context.user){
+                return await Square.findByIdAndDelete(squareId)
             }
             throw AuthenticationError
         },

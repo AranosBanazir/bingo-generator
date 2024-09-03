@@ -65,14 +65,7 @@ html {
 
 .sm-square-completed {
   background-image: url("/assets/sm-square-completed.png");
-  background-repeat: no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: black;
-  font-weight: bold;
-  font-size: 14px;
-  text-wrap: wrap;
+
 }
 
 .freespace {
@@ -178,6 +171,22 @@ html {
 
   .freespace{
     background: url("/assets/sm-freespace.png");
+  }
+
+  .square-completed{
+    background: url("/assets/sm-square-completed.png");
+    
+  }
+
+ .freespace, .square-completed, .square {
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-weight: bold;
+    font-size: 14px;
+    text-wrap: wrap;
   }
 }
 

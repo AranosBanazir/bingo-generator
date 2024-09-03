@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useQuery, useMutation} from "@apollo/client";
 import { GET_GAME, ME } from "../../utils/queries";
-import { CREATE_CARD } from "../../utils/mutations";
+import { CREATE_CARD, DELETE_CARD } from "../../utils/mutations";
 import BingoCard from "../components/BingoCard";
 import SquareAddForm from "../components/AddASquare.jsx";
 import { TOGGLE_GAME_READY } from "../../utils/mutations";
@@ -16,23 +16,28 @@ const SingleCardPage = () => {
   let gameReady = false //setting the default
   let gameOwner = false //setting the default
   let hasACard = false; //setting the default
+  let activeCard = {} //setting the default
   const [createCard, {error: cardError, loading: cardLoading, data: cardData}] = useMutation(CREATE_CARD, {
-    variables: {gameId}, refetchQueries: [ME, 'Me'], refetchQueries: [GET_GAME, 'GetGame']
+    variables: {gameId}, refetchQueries: [ME, 'Me']
   })
   const [toggleGameReady, {error: toggleError, loading: toggleLoading, data: toggleData}] = useMutation(TOGGLE_GAME_READY, {
     variables: {gameId}, refetchQueries: [GET_GAME, 'GetGame']
   })
+  const [deleteCard] = useMutation(DELETE_CARD, {
+    refetchQueries: [ME, 'Me']
+  })
+
+
   const userCards = userData?.cards ? userData?.cards : [];
   gameData = gameData?.getGame ? gameData.getGame : [];
 
-  let rightCard = {}
-
-  //setting game state based on number of squares
+  //setting gameReady state based on number of squares
   if (gameData?.squares && gameData?.squares.length < 24){
     gameReady = false
   }else if (gameData?.squares && gameData?.squares?.length >= 24 && gameData?.ready === true){
     gameReady = true
   }
+
  
   
 //checking if a user has any cards, and if they do
@@ -41,7 +46,7 @@ if (userCards.length > 0){
     for (const card of userCards) {
       if (card?.game == gameId){
           hasACard = true
-          rightCard = card ? card : {} 
+          activeCard = card ? card : {} 
           break 
       }
     }
@@ -58,7 +63,7 @@ if (userCards.length > 0){
   const generateCard = async () =>{
     let {data} = await createCard()
     data = data?.createCard
-    rightCard = data
+    activeCard = data
     
   }
 
@@ -71,6 +76,25 @@ if (userCards.length > 0){
 
  const handleToggleGameReady = async () => {
     await toggleGameReady()
+ }
+
+
+
+ const handleCardSubmit = () =>{
+
+ }
+
+ const handleCardDelete = async () =>{
+  try {
+    await deleteCard({
+      variables: {
+        gameId: gameId,
+        cardId: activeCard._id
+      }
+    })
+  } catch (error) {
+    console.error(error)
+  }
  }
 
   return (
@@ -96,10 +120,10 @@ if (userCards.length > 0){
           </button>
           <span>{cardError.message}</span>
         </div> : <></>}
-        {gameData?.squares?.length >= 24 && gameOwner ? 
+        {gameData?.squares?.length >= 24 && gameOwner && !gameReady ? 
         <>
           <div className="flex flex-col items-center">
-            <h2 className="mt-3">Your game has enough squares!</h2>
+            <h2 className="md:text-3xl mt-5">Your game has enough squares!</h2>
             <button onClick={handleToggleGameReady} className="btn btn-primary mt-3">Start Game!</button>
           </div>
         </>
@@ -109,7 +133,7 @@ if (userCards.length > 0){
         {
         !gameReady ? 
         <>
-        <h2 className="self-center mt-10 md:text-4xl text-2xl">Your game needs more squares!</h2>
+          {gameData?.squares?.length < 24 ? <h2 className="self-center mt-10 md:text-4xl text-2xl">Your game needs more squares!</h2>: '' }
         <SquareAddForm gameId={gameId} gameData={gameData}/>
         </>
         
@@ -117,7 +141,7 @@ if (userCards.length > 0){
         
         !hasACard ? (
             <div className="flex flex-col justify-center items-center min-h-[70vh]">
-                <h2 className="text-4xl">You don't have a card for this game!</h2>
+                <h2 className="md:text-4xl text-2xl">You don't have a card for this game!</h2>
                 <button onClick={generateCard} className="btn btn-primary mt-10">Generate Card!</button>
             </div>
         
@@ -129,12 +153,21 @@ if (userCards.length > 0){
                     <input type="checkbox" className="checkbox" onChange={handleHideMarks} />
                 </label>
             </div>
-            <BingoCard card={rightCard} hideMarks={hideMarks}/>
+            <BingoCard card={activeCard} hideMarks={hideMarks}/>
                 <div className="flex flex-row justify-evenly mt-10 mb-20">
-                    <button className="btn btn-error max-w-[700px] ">
-                        Delete Card
-                    </button>
-                    <button className="btn btn-success max-w-[700px]">
+                    <button className="btn btn-error" onClick={()=>document.getElementById('deleteModal').showModal()}>Delete Card</button>
+                    <dialog id="deleteModal" className="modal">
+                      <div className="modal-box">
+                        <form method="dialog">
+                          {/* if there is a button in form, it will close the modal */}
+                          <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        <h3 className="font-bold text-lg">Are you sure you want to delete your card?</h3>
+                        <p className="py-4">You will lose all progress on this card, but can start a new one!</p>
+                        <button className="btn btn-warning" onClick={handleCardDelete}>I am sure!</button>
+                        </form>
+                      </div>
+                    </dialog>
+                    <button className="btn btn-success max-w-[700px]" onClick={handleCardSubmit}>
                         Submit Card
                     </button>
                 </div>

@@ -23,6 +23,24 @@ export const CREATE_CARD = gql`
     }
 `
 
+
+export const DELETE_CARD = gql`
+    mutation DeleteCard($gameId: ID!, $cardId: ID!) {
+        deleteCard(gameId: $gameId, cardId: $cardId) {
+            _id  
+        }
+    }
+`
+
+export const DELETE_SQUARE = gql`
+    mutation DeleteSquare($squareId: ID!) {
+        deleteSquare(squareId: $squareId) {
+            _id  
+        }
+    }
+`
+
+
 export const CONFIRM_SQUARE = gql`
     mutation ConfirmSquare($squareId: ID!, $cardId: ID!) {
         confirmSquare(squareId: $squareId, cardId: $cardId) {
