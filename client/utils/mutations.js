@@ -9,6 +9,16 @@ export const LOGIN = gql`
     }
 `
 
+
+export const ADD_FRIEND = gql`
+    mutation AddFriend($username: String!) {
+        addFriend(username: $username) {
+            username
+        }
+    }
+`
+
+
 export const CREATE_CARD = gql`
     mutation CreateCard($gameId: ID!) {
         createCard(gameId: $gameId) {
