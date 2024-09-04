@@ -4,7 +4,6 @@ const typeDefs =`
         _id: ID!
         username: String!
         email: String!
-        password: String!
         friends: [User]
         games: [Game]
         cards: [Card]

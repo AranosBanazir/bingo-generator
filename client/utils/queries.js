@@ -12,6 +12,7 @@ export const ME = gql`
             }
             gameInvites {
                 title
+                ready
             }
             friends {
                 username

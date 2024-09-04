@@ -1,6 +1,6 @@
 const {Game, Square, Card, User} = require('../models')
 const {signToken, AuthenticationError} = require('../utils/auth')
-const { GraphQLError, graphql } = require('graphql');
+const { GraphQLError } = require('graphql');
 
 const resolvers = {
     Query: {
@@ -251,7 +251,7 @@ const resolvers = {
         },
         addFriend: async (parent, {username}, context) =>{
             if (context.user){
-                const currentUser = await User.findById(context.user._id)
+                const currentUser = await User.findById(context.user._id).populate('friends')
                 const potentialFriend = await User.findOne({username})
 
                 //erroring on no username found
@@ -275,12 +275,23 @@ const resolvers = {
                 }
                 
 
+                let friends = false //setting the default before checking if already friends
+
+                for (const friend of currentUser.friends){
+                    if (friend.username === username){
+                        friends = true
+                    }
+                }
+
                 //send the friend invite
-                const updatedPotentialFriend = await User.findOneAndUpdate({username}, {
-                    $addToSet: {friendInvites: currentUser._id},
-                })
+                if (!friends){
+                    const updatedPotentialFriend = await User.findOneAndUpdate({username}, {
+                        $addToSet: {friendInvites: currentUser._id},
+                    })
+                    return updatedPotentialFriend
+                }
                 
-                return updatedPotentialFriend
+                return new GraphQLError('You are already friends with that user.')
             }
             throw AuthenticationError
         },
