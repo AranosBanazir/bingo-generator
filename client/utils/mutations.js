@@ -18,6 +18,21 @@ export const ADD_FRIEND = gql`
     }
 `
 
+export const REMOVE_FRIEND = gql`
+    mutation RemoveFriend($username: String!) {
+        removeFriend(username: $username) {
+            username
+        }
+    }
+`
+
+export const REJECT_FRIEND = gql`
+    mutation RejectFriendInvite($username: String!) {
+        rejectFriendInvite(username: $username) {
+            username
+        }
+    }
+`
 
 export const CREATE_CARD = gql`
     mutation CreateCard($gameId: ID!) {

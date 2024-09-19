@@ -155,7 +155,7 @@ if (userCards.length > 0){
         !gameReady ? 
         <>
           {gameData?.squares?.length < 24 ? <h2 className="self-center mt-10 md:text-4xl text-2xl">Your game needs more squares!</h2>: '' }
-        <SquareAddForm gameId={gameId} gameData={gameData}/>
+        <SquareAddForm gameId={gameId} gameData={gameData} gameOwner={gameOwner}/>
         </>
         
         :

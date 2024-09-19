@@ -5,7 +5,7 @@ import { GET_GAME } from "../../../utils/queries"
 import { ADD_SQUARE, DELETE_SQUARE } from "../../../utils/mutations"
 
 
-const SquareAddForm = ({gameId, gameData}) =>{
+const SquareAddForm = ({gameId, gameData, gameOwner}) =>{
     const [squareContent, setSquareContent] = useState(null)
     const [clickedSquare, setClickedSquare] = useState(null)
     const [addSquare] = useMutation(ADD_SQUARE)
@@ -35,8 +35,6 @@ const SquareAddForm = ({gameId, gameData}) =>{
     // console.log(gameData)
 
     const handleDeleteSquare = async (e) =>{
-        // e.preventDefault()
-        console.log(clickedSquare)
         try {
             await deleteSquare({
                 variables:{
@@ -60,8 +58,9 @@ const SquareAddForm = ({gameId, gameData}) =>{
         <section className="grid md:grid-cols-5 grid-cols-3 gap-4 mt-5">
             {gameData?.squares?.map(square=>{
               return (
-                <div key={square._id} className="square md:min-w-[150px] md:min-h-[150px] md:max-w-[150px] md:max-h-[150px] min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px]" 
-                    onContextMenu={(e)=>{ 
+                <>
+                {gameOwner ? <div key={square._id} className="square md:min-w-[150px] md:min-h-[150px] md:max-w-[150px] md:max-h-[150px] min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px]" 
+                    onClick={(e)=>{ 
                         e.preventDefault(); 
                         document.getElementById('deleteModal').showModal()
                         setClickedSquare({
@@ -73,7 +72,15 @@ const SquareAddForm = ({gameId, gameData}) =>{
                     <p className="square-content" data-squareid={square._id} id={square._id}>
                         {square.content}
                     </p>
+                </div> 
+                :
+                <div key={square._id} className="square md:min-w-[150px] md:min-h-[150px] md:max-w-[150px] md:max-h-[150px] min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px]" >
+                    <p className="square-content" data-squareid={square._id} id={square._id}>
+                        {square.content}
+                    </p>
                 </div>
+                }
+                </>
               )
             })}
         </section>

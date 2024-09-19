@@ -254,6 +254,13 @@ const resolvers = {
                 const currentUser = await User.findById(context.user._id).populate('friends')
                 const potentialFriend = await User.findOne({username})
 
+            
+            if (currentUser.username === potentialFriend.username){
+                return new GraphQLError("...You can't add yourself as a friend.")
+            }
+
+                
+
                 //erroring on no username found
                 if (!potentialFriend){
                     throw new GraphQLError(`No user found with username: ${username}`)
@@ -312,8 +319,11 @@ const resolvers = {
         },
         removeFriend: async (parent, {username}, context) =>{
             if (context.user){
-                const removedFriend = await User.findOne({username})
-
+                
+                const removedFriend = await User.findOneAndUpdate({username},{
+                    $pull: {friends: context.user._id}
+                })
+                
                 if (!removedFriend){
                     throw new GraphQLError(`User: ${username}, is either incorrect or no longer exists.`)
                 }
@@ -321,6 +331,8 @@ const resolvers = {
                 const currentUser = await User.findByIdAndUpdate(context.user._id, {
                     $pull: {friends: removedFriend._id}
                 })
+
+
 
                 return removedFriend
             }

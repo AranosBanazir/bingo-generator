@@ -1,16 +1,16 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { NavLink } from "react-router-dom";
 import { ME } from "../../utils/queries";
-import { ADD_FRIEND } from "../../utils/mutations";
+import { ADD_FRIEND, REJECT_FRIEND, REMOVE_FRIEND } from "../../utils/mutations";
 import { useState } from "react";
 
 const ProfilePage = () => {
   const { loading, error, data } = useQuery(ME);
   const userData = data?.me;
   const [addFriend] = useMutation(ADD_FRIEND);
+  const [removeFriend] = useMutation(REMOVE_FRIEND)
+  const [rejectFriend] = useMutation(REJECT_FRIEND)
   const [friendUsername, setFriendUsername] = useState(null);
-
-  //TODO make the friends list/invites look nice and allow for interaction of accept/deny
+  const [accountInfo, setAccountInfo] = useState(null)
 
   const handleAddFriend = async (e) => {
     e.preventDefault();
@@ -25,7 +25,55 @@ const ProfilePage = () => {
     });
   };
 
-  console.log("game invites", userData?.gameInvites);
+  const handleAcceptFriend = async (e) =>{
+    e.preventDefault();
+    const {username} = e.target.dataset
+
+    try {
+      await addFriend({
+        variables:{
+          username
+        },
+        refetchQueries: [ME, 'Me']
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleRejectFriend = async (e) =>{
+    e.preventDefault();
+    const {username} = e.target.dataset
+
+    try {
+      await rejectFriend({
+        variables:{
+          username
+        },
+        refetchQueries: [ME, 'Me']
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleRemoveFriend = async (e) =>{
+    e.preventDefault();
+    const {username} = e.target.dataset
+
+    try {
+      await removeFriend({
+        variables:{
+          username
+        },
+        refetchQueries: [ME, 'Me']
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+ 
 
   return (
     <main className="grid grid-cols-3 h-[100vh] mx-32">
@@ -129,7 +177,10 @@ const ProfilePage = () => {
                         className="flex flex-row items-center my-2 text-xl justify-between"
                       >
                         {friend.username}
-                        <button className="bg-error w-[25px] h-[25px] text-black font-bold mx-2">
+                        <button className="bg-error w-[25px] h-[25px] text-black font-bold mx-2"
+                        onClick={handleRemoveFriend}
+                        data-username={friend.username}
+                        >
                           &#935;
                         </button>
                       </li>
@@ -139,7 +190,7 @@ const ProfilePage = () => {
               </section>
 
               <section id="friend-invite-section">
-                <h2 className="self-center text-2xl">Friend Invites:</h2>
+                <h2 className="self-center text-2xl">Friend Requests:</h2>
                 <ul className="ml-10">
                   {userData?.friendInvites.map((friend) => {
                     return (
@@ -149,10 +200,16 @@ const ProfilePage = () => {
                       >
                         {friend.username}
                         <div>
-                          <button className="bg-success w-[25px] h-[25px] text-black font-bold mx-2">
+                          <button className="bg-success w-[25px] h-[25px] text-black font-bold mx-2"
+                          onClick={handleAcceptFriend}
+                          data-username={friend.username}
+                          >
                             &#10004;
                           </button>
-                          <button className="bg-error w-[25px] h-[25px] text-black font-bold mx-2">
+                          <button className="bg-error w-[25px] h-[25px] text-black font-bold mx-2"
+                          onClick={handleRejectFriend}
+                          data-username={friend.username}
+                          >
                             &#935;
                           </button>
                         </div>
@@ -170,7 +227,7 @@ const ProfilePage = () => {
               {userData?.gameInvites.map(game=>{
                 return (
                   <>
-                  <div className="flex flex-col justify-center bg-base-100 shadow-xl bordered px-4 pb-4">
+                  <div className="flex flex-col justify-center bg-base-100 shadow-xl bordered px-4 pb-4" key={game._id}>
                   <div className="card-body ">
                     <h2 className="text-2xl">{game.title}</h2>
                     <p className="text-lg">

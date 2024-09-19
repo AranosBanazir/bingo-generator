@@ -10,10 +10,11 @@ const GameManager = () => {
   const {loading: meLoading, error: meError, data: meData} = useQuery(ME)
   const userData = meData?.me
   let { data: gameData, loading: gameLoading } = useQuery(GET_GAME, { variables: { gameId }});
+  gameData = gameData?.getGame
 
     //return if loading
     if (meLoading || gameLoading) return <>Loading...</>
-
+  console.log(gameData, userData)
   return (
     <>
     
